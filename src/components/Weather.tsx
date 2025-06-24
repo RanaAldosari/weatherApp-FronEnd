@@ -1,8 +1,6 @@
-// import React, { useState, useEffect } from 'react';
 import { useState, useEffect } from 'react';
-
-import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { getWeatherData } from '../services/Weather'; 
 
 function Weather() {
   const [lat, setLat] = useState('');
@@ -33,18 +31,10 @@ function Weather() {
 
     try {
       const token = localStorage.getItem('token');
-
-      const response = await axios.get('https://weatherapp-backend-6tzd.onrender.com/weather', {
-        params: { lat, lon },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-// get
-      setWeatherData(response.data); 
-
+      const data = await getWeatherData(lat, lon, token);
+      setWeatherData(data);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to fetch weather');
+      setError(err.response?.data?.error || err.message || 'Failed to fetch weather');
     } finally {
       setLoading(false);
     }

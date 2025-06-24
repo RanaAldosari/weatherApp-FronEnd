@@ -1,98 +1,59 @@
-// import React, { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 // import axios from 'axios';
 
-// interface WeatherData {
-//   name: string;
-//   main: {
-//     temp: number;
-//     humidity: number;
-//     pressure: number;
-//   };
-//   weather: { description: string }[];
-//   wind: {
-//     speed: number;
-//   };
-// }
-
-// interface HistoryItem {
-//   _id: string;
-//   lat: number;
-//   lon: number;
-//   requestedAt: string;
-//   weather: WeatherData;
-// }
-
-// interface User {
-//   id: string;
-//   email: string;
-// }
-
-// const History = () => {
-//   const [history, setHistory] = useState<HistoryItem[]>([]);
-//   const [user, setUser] = useState<User | null>(null);
+// function History() {
+//   const [historyData, setHistoryData] = useState<any[]>([]);
 //   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
+//   const token = localStorage.getItem('token');
+//   const userEmail = localStorage.getItem('email');
 
 //   useEffect(() => {
 //     const fetchHistory = async () => {
 //       try {
-//         const token = localStorage.getItem('token');
-//         if (!token) {
-//           setError('User not authenticated');
-//           setLoading(false);
-//           return;
+//         const res = await axios.get('https://weatherapp-backend-6tzd.onrender.com/history', {
+//           headers: { Authorization: `Bearer ${token}` },
+//         });
+
+//         if (!res.data || !Array.isArray(res.data)) {
+//           throw new Error('Invalid history data');
 //         }
 
-//         const userData = JSON.parse(localStorage.getItem('user') || 'null');
-//         setUser(userData);
+//         const filteredData = res.data.filter((item: any) => item.email === userEmail);
 
-//         const response = await axios.get('http://localhost:3000/history', {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-// // results
-// setHistory(response.data);
-//       } catch (err: any) {
-// setError('Failed to load history');
+//         setHistoryData(filteredData);
+//       } catch (error) {
+//         console.error('Failed to load history:', error);
 //       } finally {
-// setLoading(false);
+//         setLoading(false);
 //       }
 //     };
 
 //     fetchHistory();
-//   }, []);
-
-//   if (loading) return <p>Loading history...</p>;
-//   if (error) return <p className="text-red-500">{error}</p>;
+//   }, [token, userEmail]);
 
 //   return (
-//     <div className="max-w-4xl mx-auto p-4">
-//       <h2 className="text-2xl font-semibold mb-6">
-//         {user ? `${user.email}'s Weather History` : 'Weather History'}
-//       </h2>
+//     <div className="min-h-screen bg-gradient-to-br from-blue-400 to-purple-400 px-6 py-10 text-white">
+//       <h2 className="text-2xl font-bold mb-6">Coordinates History</h2>
 
-//       {history.length === 0 ? (
+//       {loading ? (
+//         <p>Loading...</p>
+//       ) : historyData.length === 0 ? (
 //         <p>No history found.</p>
 //       ) : (
-//         <ul>
-//           {history.map((item) => (
-//             <li key={item._id} className="mb-6 border-b pb-4">
-//               <p><strong>Date:</strong> {new Date(item.requestedAt).toLocaleString()}</p>
-//               <p>
-//                 <strong>Location:</strong> Lat {item.lat.toFixed(2)}, Lon {item.lon.toFixed(2)} ({item.weather?.name || 'Unknown'})
-//               </p>
-//               <p><strong>Temperature:</strong> {item.weather?.main?.temp ?? 'N/A'} °C</p>
-//               <p><strong>Weather:</strong> {item.weather?.weather?.[0]?.description ?? 'N/A'}</p>
-//               <p><strong>Humidity:</strong> {item.weather?.main?.humidity ?? 'N/A'} %</p>
-//               <p><strong>Wind Speed:</strong> {item.weather?.wind?.speed ?? 'N/A'} m/s</p>
-//               <p><strong>Pressure:</strong> {item.weather?.main?.pressure ?? 'N/A'} hPa</p>
-//             </li>
+//         <div className="space-y-4">
+//           {historyData.map((item, index) => (
+//             <div
+//               key={index}
+//               className="bg-white text-gray-800 p-4 rounded-md shadow-md flex items-center gap-4"
+//             >
+//               <img src="/location.png" alt="location" className="w-8 h-8" />
+//               <p className="font-medium">Lat: {item.lat} — Lon: {item.lon}</p>
+//             </div>
 //           ))}
-//         </ul>
+//         </div>
 //       )}
 //     </div>
 //   );
-// };
+// }
 
 // export default History;

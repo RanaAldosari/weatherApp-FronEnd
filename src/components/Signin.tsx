@@ -1,31 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import axios from 'axios';
 import { Link } from 'react-router';
 import Swal from 'sweetalert2';
+import { signIn } from '../services/Auth';
+
 function SignIn() {
- const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-// login func
+
   const handleSignIn = async () => {
     try {
-      const signinURL = await axios.post("https://weatherapp-backend-6tzd.onrender.com/auth/signin", {
-        email,
-        password
-      });
-localStorage.setItem('token', signinURL.data.token);
-localStorage.setItem('email', email);
-// success
+      const data = await signIn(email, password);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('email', email);
+
       Swal.fire({
         title: "Success!",
         text: "Login successful!",
         icon: "success"
       });
- navigate('/weather-data');
-    } 
-// fail
-    catch (err: any) {
+
+navigate('/weather-data');
+} catch (err) {
       Swal.fire({
         icon: "error",
         title: "Oops...",

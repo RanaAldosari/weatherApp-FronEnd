@@ -1,38 +1,34 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import axios from 'axios';
 import { Link } from 'react-router';
 import Swal from 'sweetalert2';
+// import services
+import { signUp } from '../services/Auth';
+
 function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-// switch func
+
   const switchToSignin = async () => {
     try {
-      const signupURL = await axios.post('https://weatherapp-backend-6tzd.onrender.com/auth/signup', 
-        { email, password }
-      );
-      // success
-      if (signupURL.status === 201 || signupURL.status === 200) {
+      const response = await signUp(email, password);
+      if (response.status === 201 || response.status === 200) {
         Swal.fire({
-  title: "Sucess!",
-  text: "Account created Successfully ,Please sign in.",
-  icon: "success"
-});
+          title: "Success!",
+          text: "Account created successfully. Please sign in.",
+          icon: "success"
+        });
         navigate('/signin');
       }
-    }
-    // fail
-catch (err: any) {
+    } catch (err) {
       Swal.fire({
-  icon: "error",
-  title: "Oops...",
-  text: "Signup failed ,Please try again"
-});
+        icon: "error",
+        title: "Oops...",
+        text: "Signup failed. Please try again."
+      });
     }
   };
-
   return (
     <>
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-400 px-4">
